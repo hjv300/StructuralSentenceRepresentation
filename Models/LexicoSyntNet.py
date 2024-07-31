@@ -143,7 +143,7 @@ class LexicoSyntNet:
                                                     initial_epoch=0)
 
         print('pickling...')
-        with open("training.history_alldata_%s_%sepochs_%sbatch.p" %(self.base_network,epochs, batch_size), "wb") as fid:
+        with open("resuls/alldata-no-evaluations/training.history_alldata_%s_%sepochs_%sbatch.p" %(self.base_network,epochs, batch_size), "wb") as fid:
             pickle.dump(training.history, fid, -1)
 
 
@@ -152,7 +152,7 @@ class LexicoSyntNet:
         word_index = data.tokenizer.word_index
         assert self.lex_embeddings.shape[0]==data.vocab_size , "wrong layer"
 
-        with open("results/word_vecs_alldata_%s_%sepochs_%sbatch" %(self.base_network, epochs, batch_size), "w") as f:
+        with open("results/alldata-no-evaluations/word_vecs_alldata_%s_%sepochs_%sbatch" %(self.base_network, epochs, batch_size), "w") as f:
             line =""
             for word, index in word_index.items():
                 line = str(word)+ " "+ " ".join(["{:.4f}".format(x) for x in self.lex_embeddings[index]])
@@ -165,7 +165,7 @@ class LexicoSyntNet:
         synt_embeddings = self.syntactic_subnet.layers[1].get_weights()[0]
         assert synt_embeddings.shape[0]==len(data.POS_TAGS ), "wrong layer"
 
-        with open("results/structural_labels_vecs_alldata_%s_%sepochs_%sbatch" %(self.base_network, epochs, batch_size), "w") as f:
+        with open("results/alldata-no-evaluations/datastructural_labels_vecs_alldata_%s_%sepochs_%sbatch" %(self.base_network, epochs, batch_size), "w") as f:
             line =""
             for index, tag in enumerate(data.POS_TAGS):
                 line = str(tag)+ " "+ " ".join(["{:.4f}".format(x) for x in synt_embeddings[index]])
@@ -224,7 +224,7 @@ class LexicoSyntNet:
                          'ObjNumber', 'OddManOut', 'CoordinationInversion']  #
         results = se.eval(probing_tasks)
         print(results)
-        with open("evaluation_lexicalsubnet_results_alldata.p", "wb") as fid:
+        with open("results/evaluations/evaluation_lexicalsubnet_results_alldata.p", "wb") as fid:
             pickle.dump(results, fid, -1)
 
     def evaluate_bow(self, data):
@@ -311,7 +311,7 @@ class LexicoSyntNet:
                          'ObjNumber', 'OddManOut', 'CoordinationInversion']  #
         results = se.eval(probing_tasks)
         print(results)
-        with open("evaluation_bow_results_alldata.p", "wb") as fid:
+        with open("results/evaluations/evaluation_bow_results_alldata.p", "wb") as fid:
             pickle.dump(results, fid, -1)
 
     def evaluate_bow_fasttext(self, data):
@@ -409,7 +409,7 @@ class LexicoSyntNet:
                          'ObjNumber', 'OddManOut', 'CoordinationInversion']  #
         results = se.eval(probing_tasks)
         print(results)
-        with open("evaluation_bow+fasttext_results_alldata.p", "wb") as fid:
+        with open("results/evaluations/evaluation_bow+fasttext_results_alldata.p", "wb") as fid:
             pickle.dump(results, fid, -1)
 
     def evaluate_bow_glove(self, data):
@@ -506,7 +506,7 @@ class LexicoSyntNet:
                          'ObjNumber', 'OddManOut', 'CoordinationInversion']  #
         results = se.eval(probing_tasks)
         print(results)
-        with open("evaluation_bow+fasttext_results_alldata.p", "wb") as fid:
+        with open("results/evaluations/evaluation_bow+fasttext_results_alldata.p", "wb") as fid:
             pickle.dump(results, fid, -1)
 
     # def visualize_attention(self):
@@ -514,14 +514,14 @@ class LexicoSyntNet:
 
 if __name__=="__main__":
 
-    data = pickle.load(open("lambda_data_parsetrees_fasttext_len_40.p", "rb"))
+    data = pickle.load(open("parsetrees_fastext/lambda_data_parsetrees_fasttext_len_40.p", "rb"))
     network = LexicoSyntNet(embed_dim=100,rep_dim=100, vocab_size=data.vocab_size, num_struct_labels=len(data.POS_TAGS), lex_input_len=40, synt_input_len=40, base_network="self_att_max")
     # network.load_network(model_file="self_att_max_flatt_40_80-epoch49.hdf5")
     network.train_network(data=data, epochs=50, batch_size=400)
     print(time.strftime('%l:%M%p'), "------------------------------BOW evaluation----------------------------------")
-    # network.evaluate_bow(data)
+    network.evaluate_bow(data)
     print(time.strftime('%l:%M%p'), "-----------------------------BOW+glove evaluation----------------------------")
-    # network.evaluate_bow_glove(data)
+    network.evaluate_bow_glove(data)
     print(time.strftime('%l:%M%p'), "--------------------------------lexicalsubnetwork evaluation-----------------------------")
     network.evaluate_lexicalsubnet(data)
 
