@@ -1,0 +1,12 @@
+Datasets/jsons-easy/
+Datasets/jsons-medium/
+Datasets/lambdadataset/
+Datasets/pandata/
+Datasets/training_dataset
+Models/__pycache__/
+Models/stanford-corenlp-4.5.7/
+Models/DataLoader.pyc
+Models/checkpoints/
+Models/parsetrees_fastext/
+Models/results/
+SentEval/
